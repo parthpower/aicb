@@ -383,77 +383,154 @@ class SIMAI_workload:
                             forward_comm6 = "ALLTOALL_EP"
                             forward_comm7 = "ALLTOALL"
                         if args.expert_model_parallel_size != 1:
-                            self.workload.append(Work_Item(name=name, forward_compute_time=forward_compute_time,
-                                        forward_comm = forward_comm1, forward_comm_size= 2*self.mbs*self.seq_len*self.num_experts,
-                                        backward_compute_time=backward_compute_time, backward_comm=forward_comm1, backward_comm_size=2*self.mbs*self.seq_len*self.num_experts,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
-                            self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
-                                        forward_comm = forward_comm2, forward_comm_size= tp_comm_size//self.tp,
-                                        backward_compute_time=default_compute_time, backward_comm=forward_comm2, backward_comm_size=tp_comm_size//self.tp,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
+                            if forward_comm1 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=forward_compute_time,
+                                            forward_comm = forward_comm1, forward_comm_size= 0,
+                                            backward_compute_time=backward_compute_time, backward_comm=forward_comm1, backward_comm_size=0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=forward_compute_time,
+                                            forward_comm = forward_comm1, forward_comm_size= 2*self.mbs*self.seq_len*self.num_experts,
+                                            backward_compute_time=backward_compute_time, backward_comm=forward_comm1, backward_comm_size=2*self.mbs*self.seq_len*self.num_experts,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+
+                            if forward_comm2 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm2, forward_comm_size= 0,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm2, backward_comm_size= 0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm2, forward_comm_size= tp_comm_size//self.tp,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm2, backward_comm_size=tp_comm_size//self.tp,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+
                             self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
                                         forward_comm = forward_comm3, forward_comm_size= tp_comm_size*self.topk//self.tp,
                                         backward_compute_time=default_compute_time, backward_comm=forward_comm3, backward_comm_size=tp_comm_size*self.topk//self.tp,
                                         dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
                                         ))
-                            self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
-                                        forward_comm = forward_comm4, forward_comm_size= tp_comm_size*self.topk,
-                                        backward_compute_time=default_compute_time, backward_comm=forward_comm5, backward_comm_size=tp_comm_size*self.topk,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
-                            self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
-                                        forward_comm = forward_comm5, forward_comm_size= tp_comm_size*self.topk,
-                                        backward_compute_time=default_compute_time, backward_comm=forward_comm4, backward_comm_size=tp_comm_size*self.topk,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
+                            if forward_comm4 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm4, forward_comm_size= 0,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm5, backward_comm_size= 0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm4, forward_comm_size= tp_comm_size*self.topk,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm5, backward_comm_size=tp_comm_size*self.topk,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+
+                            if forward_comm5 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm5, forward_comm_size= 0,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm4, backward_comm_size= 0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm5, forward_comm_size= tp_comm_size*self.topk,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm4, backward_comm_size=tp_comm_size*self.topk,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+
                             self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
                                         forward_comm = forward_comm6, forward_comm_size= tp_comm_size*self.topk//self.tp,
                                         backward_compute_time=default_compute_time, backward_comm=forward_comm6, backward_comm_size=tp_comm_size*self.topk//self.tp,
                                         dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
                                         ))
-                            self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
-                                        forward_comm = forward_comm7, forward_comm_size= tp_comm_size//self.tp,
-                                        backward_compute_time=default_compute_time, backward_comm=forward_comm7, backward_comm_size=tp_comm_size//self.tp,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
+                            if forward_comm7 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm7, forward_comm_size= 0,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm7, backward_comm_size=0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm7, forward_comm_size= tp_comm_size//self.tp,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm7, backward_comm_size=tp_comm_size//self.tp,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+
                         else:
-                            self.workload.append(Work_Item(name=name, forward_compute_time=forward_compute_time,
-                                        forward_comm = forward_comm1, forward_comm_size= 2*self.mbs*self.seq_len*self.num_experts,
-                                        backward_compute_time=backward_compute_time, backward_comm=forward_comm1, backward_comm_size=2*self.mbs*self.seq_len*self.num_experts,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
-                            self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
-                                        forward_comm = forward_comm2, forward_comm_size= tp_comm_size//self.tp,
-                                        backward_compute_time=default_compute_time, backward_comm=forward_comm2, backward_comm_size=tp_comm_size//self.tp,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
+                            if forward_comm1 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=forward_compute_time,
+                                            forward_comm = forward_comm1, forward_comm_size= 0,
+                                            backward_compute_time=backward_compute_time, backward_comm=forward_comm1, backward_comm_size= 0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=forward_compute_time,
+                                            forward_comm = forward_comm1, forward_comm_size= 2*self.mbs*self.seq_len*self.num_experts,
+                                            backward_compute_time=backward_compute_time, backward_comm=forward_comm1, backward_comm_size=2*self.mbs*self.seq_len*self.num_experts,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+
+                            if forward_comm2 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm2, forward_comm_size= 0,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm2, backward_comm_size=0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm2, forward_comm_size= tp_comm_size//self.tp,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm2, backward_comm_size=tp_comm_size//self.tp,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
                             self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
                                         forward_comm = forward_comm3, forward_comm_size=1,
                                         backward_compute_time=default_compute_time, backward_comm=forward_comm3, backward_comm_size=1,
                                         dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
                                         ))
-                            self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
-                                        forward_comm = forward_comm4, forward_comm_size= tp_comm_size*self.topk,
-                                        backward_compute_time=default_compute_time, backward_comm=forward_comm4, backward_comm_size=tp_comm_size*self.topk,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
-                            self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
-                                        forward_comm = forward_comm5, forward_comm_size= tp_comm_size*self.topk,
-                                        backward_compute_time=default_compute_time, backward_comm=forward_comm4, backward_comm_size=tp_comm_size*self.topk,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
+                            if forward_comm4 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm4, forward_comm_size= 0,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm4, backward_comm_size= 0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm4, forward_comm_size= tp_comm_size*self.topk,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm4, backward_comm_size=tp_comm_size*self.topk,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+
+                            if forward_comm5 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm5, forward_comm_size= 0,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm4, backward_comm_size= 0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size))
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm5, forward_comm_size= tp_comm_size*self.topk,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm4, backward_comm_size=tp_comm_size*self.topk,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
                             self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
                                         forward_comm = forward_comm6, forward_comm_size=1,
                                         backward_compute_time=default_compute_time, backward_comm=forward_comm6, backward_comm_size=1,
                                         dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
                                         ))
-                            self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
-                                        forward_comm = forward_comm7, forward_comm_size= tp_comm_size//self.tp,
-                                        backward_compute_time=default_compute_time, backward_comm=forward_comm7, backward_comm_size=tp_comm_size//self.tp,
-                                        dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
-                                        ))
+                            if forward_comm7 == "NONE":
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm7, forward_comm_size= 0,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm7, backward_comm_size=0,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
+                            else:
+                                self.workload.append(Work_Item(name=name, forward_compute_time=default_compute_time,
+                                            forward_comm = forward_comm7, forward_comm_size= tp_comm_size//self.tp,
+                                            backward_compute_time=default_compute_time, backward_comm=forward_comm7, backward_comm_size=tp_comm_size//self.tp,
+                                            dp_compute_time=default_compute_time, dp_comm=dp_comm, dp_comm_size=dp_comm_size
+                                            ))
                 else:
                     if args.tensor_model_parallel_size == 1 :
                         forward_comm = "NONE"
